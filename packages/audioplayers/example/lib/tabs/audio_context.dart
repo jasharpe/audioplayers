@@ -27,7 +27,7 @@ class AudioContextTabState extends State<AudioContextTab>
   AudioContextConfig audioContextConfig = AudioContextConfig();
 
   /// Set config for each platform individually
-  AudioContext audioContext = AudioContext();
+  AudioContext audioContext = const AudioContext();
 
   @override
   Widget build(BuildContext context) {
@@ -194,7 +194,7 @@ class AudioContextTabState extends State<AudioContextTab>
   Widget _iosTab() {
     final iosOptions = AVAudioSessionOptions.values.map(
       (option) {
-        final options = audioContext.iOS.options;
+        final options = audioContext.iOS.options.toList();
         return Cbx(
           option.name,
           value: options.contains(option),
