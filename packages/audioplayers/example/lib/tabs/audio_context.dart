@@ -3,7 +3,6 @@ import 'package:audioplayers_example/components/cbx.dart';
 import 'package:audioplayers_example/components/drop_down.dart';
 import 'package:audioplayers_example/components/tab_content.dart';
 import 'package:audioplayers_example/components/tabs.dart';
-import 'package:audioplayers_example/utils.dart';
 import 'package:flutter/material.dart';
 
 class AudioContextTab extends StatefulWidget {
@@ -83,15 +82,10 @@ class AudioContextTabState extends State<AudioContextTab>
   }
 
   void updateConfig(AudioContextConfig newConfig) {
-    try {
-      final context = newConfig.build();
-      setState(() {
-        audioContextConfig = newConfig;
-        audioContext = context;
-      });
-    } on AssertionError catch (e) {
-      toast(e.message.toString());
-    }
+    setState(() {
+      audioContextConfig = newConfig;
+      audioContext = audioContextConfig.build();
+    });
   }
 
   void updateAudioContextAndroid(AudioContextAndroid contextAndroid) {
@@ -100,15 +94,10 @@ class AudioContextTabState extends State<AudioContextTab>
     });
   }
 
-  void updateAudioContextIOS(AudioContextIOS Function() buildContextIOS) {
-    try {
-      final context = buildContextIOS();
-      setState(() {
-        audioContext = audioContext.copy(iOS: context);
-      });
-    } on AssertionError catch (e) {
-      toast(e.message.toString());
-    }
+  void updateAudioContextIOS(AudioContextIOS contextIOS) {
+    setState(() {
+      audioContext = audioContext.copy(iOS: contextIOS);
+    });
   }
 
   Widget _genericTab() {
@@ -205,20 +194,19 @@ class AudioContextTabState extends State<AudioContextTab>
   Widget _iosTab() {
     final iosOptions = AVAudioSessionOptions.values.map(
       (option) {
-        final options = {...audioContext.iOS.options};
+        final options = audioContext.iOS.options;
         return Cbx(
           option.name,
           value: options.contains(option),
           ({value}) {
-            updateAudioContextIOS(() {
-              final iosContext = audioContext.iOS.copy(options: options);
-              if (value ?? false) {
-                options.add(option);
-              } else {
-                options.remove(option);
-              }
-              return iosContext;
-            });
+            if (value ?? false) {
+              options.add(option);
+            } else {
+              options.remove(option);
+            }
+            updateAudioContextIOS(
+              audioContext.iOS.copy(options: options),
+            );
           },
         );
       },
@@ -231,7 +219,7 @@ class AudioContextTabState extends State<AudioContextTab>
           options: {for (final e in AVAudioSessionCategory.values) e: e.name},
           selected: audioContext.iOS.category,
           onChange: (v) => updateAudioContextIOS(
-            () => audioContext.iOS.copy(category: v),
+            audioContext.iOS.copy(category: v),
           ),
         ),
         ...iosOptions,
