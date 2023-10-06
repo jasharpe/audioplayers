@@ -1,8 +1,6 @@
 package xyz.luan.audioplayers.source
 
 import android.media.MediaPlayer
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
 import xyz.luan.audioplayers.player.SoundPoolPlayer
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -20,14 +18,6 @@ data class UrlSource(
 
     override fun setForSoundPool(soundPoolPlayer: SoundPoolPlayer) {
         soundPoolPlayer.setUrlSource(this)
-    }
-
-    override fun setForExoPlayer(exoPlayer: ExoPlayer) {
-        exoPlayer.setMediaItem(MediaItem.fromUri(url))
-//        exoPlayer.setMediaSource()
-//        ProgressiveMediaSource.Factory(buildDataSourceFactory())
-//            .createMediaSource(new MediaItem.Builder()
-//                .setUri(Uri.parse((String)map.get("uri")))
     }
 
     fun getAudioPathForSoundPool(): String {

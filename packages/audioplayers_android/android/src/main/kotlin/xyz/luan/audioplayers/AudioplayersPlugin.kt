@@ -70,7 +70,7 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
         response: MethodChannel.Result,
         handler: FlutterHandler,
     ) {
-        mainScope.launch(Dispatchers.Main) {
+        mainScope.launch(Dispatchers.IO) {
             try {
                 handler(call, response)
             } catch (e: Exception) {
@@ -144,18 +144,18 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
                     player.source = BytesSource(bytes)
                 }
 
-                "resume" -> handler.post { player.play() }
-                "pause" -> handler.post { player.pause() }
-                "stop" -> handler.post { player.stop() }
-                "release" -> handler.post { player.release() }
+                "resume" -> player.play()
+                "pause" -> player.pause()
+                "stop" -> player.stop()
+                "release" -> player.release()
                 "seek" -> {
                     val position = call.argument<Int>("position") ?: error("position is required")
-                    handler.post { player.seek(position) }
+                    player.seek(position)
                 }
 
                 "setVolume" -> {
                     val volume = call.argument<Double>("volume") ?: error("volume is required")
-                    handler.post { player.volume = volume.toFloat() }
+                    player.volume = volume.toFloat()
                 }
 
                 "setBalance" -> {
