@@ -1,3 +1,43 @@
+## 5.0.2
+
+ - **REFACTOR**: Lint Swift ([#1613](https://github.com/bluefireteam/audioplayers/issues/1613)). ([737aa94f](https://github.com/bluefireteam/audioplayers/commit/737aa94f7edb076d622c34e498b90f17c9959e9c))
+ - **REFACTOR**: Lint Kotlin, C and C++ code ([#1610](https://github.com/bluefireteam/audioplayers/issues/1610)). ([05394668](https://github.com/bluefireteam/audioplayers/commit/0539466850aaa49a0bde9448939c6c3d536dd6e2))
+ - **FIX**: Set playback rate only when playing ([#1658](https://github.com/bluefireteam/audioplayers/issues/1658)). ([d73c7d5c](https://github.com/bluefireteam/audioplayers/commit/d73c7d5c2ef13e8eff2c438b96ade6e2483a2014))
+ - **FIX**: Improve Error handling for Unsupported Sources ([#1625](https://github.com/bluefireteam/audioplayers/issues/1625)). ([a4d84422](https://github.com/bluefireteam/audioplayers/commit/a4d84422f1421755b05aa7eff38b4d2ed0cf7482))
+ - **FIX**(darwin): Start observing `AVPlayerItem.status` before being assigned to `AVPlayer` ([#1549](https://github.com/bluefireteam/audioplayers/issues/1549)). ([8c3a2138](https://github.com/bluefireteam/audioplayers/commit/8c3a213841c063d4a45bdb96e339ac338c7c8758))
+ - **FIX**: Return null for duration and position, if not available ([#1606](https://github.com/bluefireteam/audioplayers/issues/1606)). ([2a79644a](https://github.com/bluefireteam/audioplayers/commit/2a79644a2064ccc5d8e9a31aaf888b0b60ee321d))
+
+## 5.0.1
+
+ - **REFACTOR**(darwin): Rearrange code ([#1585](https://github.com/bluefireteam/audioplayers/issues/1585)). ([13639d1f](https://github.com/bluefireteam/audioplayers/commit/13639d1f2fe5afbc17f4e862e2da0f7551b8fc3e))
+
+## 5.0.0
+
+> Note: This release has breaking changes.
+
+ - **BREAKING** **FIX**: Default audio output to system preferences ([#1563](https://github.com/bluefireteam/audioplayers/issues/1563)). ([381c43e3](https://github.com/bluefireteam/audioplayers/commit/381c43e3725fbb0cb4fd35982893a3c92b188886))
+ - **BREAKING** **CHORE**: Bump Flutter to version 3.10.x ([#1529](https://github.com/bluefireteam/audioplayers/issues/1529)). ([c1296c9b](https://github.com/bluefireteam/audioplayers/commit/c1296c9ba0cc43284b31d78f2f484454fbf6b773))
+
+## 4.1.0
+
+ - **FIX**: test and fix compatibility with min flutter version ([#1510](https://github.com/bluefireteam/audioplayers/issues/1510)). ([9f39e95f](https://github.com/bluefireteam/audioplayers/commit/9f39e95ff7913d8fc30fff27fef7aefc32de26fb))
+ - **FIX**: onPrepared event to wait until player is ready / finished loading the source ([#1469](https://github.com/bluefireteam/audioplayers/issues/1469)). ([50f56365](https://github.com/bluefireteam/audioplayers/commit/50f56365f8e512df0fc5bdb7222614389cbd4ea0))
+ - **FIX**: rework dispose ([#1480](https://github.com/bluefireteam/audioplayers/issues/1480)). ([c64ef6d9](https://github.com/bluefireteam/audioplayers/commit/c64ef6d914a52743128c717b90c4da0abbd7538d))
+ - **FEAT**: Adapt position update interval of darwin, linux, web  ([#1492](https://github.com/bluefireteam/audioplayers/issues/1492)). ([ab5bdf6a](https://github.com/bluefireteam/audioplayers/commit/ab5bdf6a2bcbf7e984d4d897e43a67b3684c52d8))
+
+## 4.0.1
+
+ - **FIX**: dispose player implementation ([#1470](https://github.com/bluefireteam/audioplayers/issues/1470)). ([d9026c15](https://github.com/bluefireteam/audioplayers/commit/d9026c1538cc83dfba5745771ad71c307b6da852))
+
+## 4.0.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**(iOS): Default to speaker instead of earpiece on iOS ([#1408](https://github.com/bluefireteam/audioplayers/issues/1408)). ([4ea5907b](https://github.com/bluefireteam/audioplayers/commit/4ea5907bfe5ce83a0d1c100acfc0760d00c2b448))
+ - **FEAT**(ios): set player context globally on `setAudioContext` for iOS only ([#1416](https://github.com/bluefireteam/audioplayers/issues/1416)). ([19af364b](https://github.com/bluefireteam/audioplayers/commit/19af364b7d0404ae436c54cdaa18d50f3a2aacd6))
+ - **DOCS**: update AudioCache explanation, migration guide, replace package READMEs ([#1457](https://github.com/bluefireteam/audioplayers/issues/1457)). ([b8eb1974](https://github.com/bluefireteam/audioplayers/commit/b8eb197435631fafeaa9a26eb76aca8e43e86420))
+ - **BREAKING** **FEAT**: event channel ([#1352](https://github.com/bluefireteam/audioplayers/issues/1352)). ([c9fd6a76](https://github.com/bluefireteam/audioplayers/commit/c9fd6a762c8c346d8d5598e3550c5571a5e460f0))
+
 ## 3.0.1
 
  - **FIX**: Remove one of the duplicated path_providers plugins

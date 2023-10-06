@@ -1,6 +1,5 @@
 package xyz.luan.audioplayers
 
-
 import android.content.Context
 import android.media.AudioManager
 import android.os.Build
@@ -20,6 +19,7 @@ import xyz.luan.audioplayers.player.SoundPoolManager
 import xyz.luan.audioplayers.player.WrappedPlayer
 import xyz.luan.audioplayers.source.BytesSource
 import xyz.luan.audioplayers.source.UrlSource
+import java.io.FileNotFoundException
 import java.lang.ref.WeakReference
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentMap
@@ -47,21 +47,22 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
         binaryMessenger = binding.binaryMessenger
         soundPoolManager = SoundPoolManager(this)
         methods = MethodChannel(binding.binaryMessenger, "xyz.luan/audioplayers")
-        methods.setMethodCallHandler { call, response -> safeCall(call, response, ::handler) }
+        methods.setMethodCallHandler { call, response -> safeCall(call, response, ::methodHandler) }
         globalMethods = MethodChannel(binding.binaryMessenger, "xyz.luan/audioplayers.global")
-        globalMethods.setMethodCallHandler { call, response -> safeCall(call, response, ::globalHandler) }
+        globalMethods.setMethodCallHandler { call, response -> safeCall(call, response, ::globalMethodHandler) }
         updateRunnable = UpdateRunnable(players, methods, handler, this)
         globalEvents = EventHandler(EventChannel(binding.binaryMessenger, "xyz.luan/audioplayers.global/events"))
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         stopUpdates()
+        handler.removeCallbacksAndMessages(null)
         updateRunnable = null
         players.values.forEach { it.dispose() }
         players.clear()
         mainScope.cancel()
         soundPoolManager.dispose()
-        globalEvents.endOfStream()
+        globalEvents.dispose()
     }
 
     private fun safeCall(
@@ -78,7 +79,7 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
         }
     }
 
-    private fun globalHandler(call: MethodCall, response: MethodChannel.Result) {
+    private fun globalMethodHandler(call: MethodCall, response: MethodChannel.Result) {
         when (call.method) {
             "setAudioContext" -> {
                 val audioManager = getAudioManager()
@@ -108,7 +109,7 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
         response.success(1)
     }
 
-    private fun handler(call: MethodCall, response: MethodChannel.Result) {
+    private fun methodHandler(call: MethodCall, response: MethodChannel.Result) {
         val playerId = call.argument<String>("playerId") ?: return
         if (call.method == "create") {
             val eventHandler = EventHandler(EventChannel(binaryMessenger, "xyz.luan/audioplayers/events/$playerId"))
@@ -119,16 +120,19 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
         val player = getPlayer(playerId)
         try {
             when (call.method) {
-                "dispose" -> {
-                    player.dispose()
-                    players.remove(playerId)
-                }
-
                 "setSourceUrl" -> {
                     val url = call.argument<String>("url") ?: error("url is required")
                     val isLocal = call.argument<Boolean>("isLocal") ?: false
-                    handler.post {
+                    try {
                         player.source = UrlSource(url, isLocal)
+                    } catch (e: FileNotFoundException) {
+                        response.error(
+                            "AndroidAudioError",
+                            "Failed to set source. For troubleshooting, see: " +
+                                "https://github.com/bluefireteam/audioplayers/blob/main/troubleshooting.md",
+                            e,
+                        )
+                        return
                     }
                 }
 
@@ -165,16 +169,12 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
                 }
 
                 "getDuration" -> {
-                    handler.post {
-                        response.success(player.getDuration() ?: 0)
-                    }
+                    response.success(player.getDuration())
                     return
                 }
 
                 "getCurrentPosition" -> {
-                    handler.post {
-                        response.success(player.getCurrentPosition() ?: 0)
-                    }
+                    response.success(player.getCurrentPosition())
                     return
                 }
 
@@ -204,6 +204,13 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
                     player.handleError(code, message, null)
                 }
 
+                "dispose" -> {
+                    handler.post {
+                        player.dispose()
+                        players.remove(playerId)
+                    }
+                }
+
                 else -> {
                     response.notImplemented()
                     return
@@ -216,7 +223,7 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
     }
 
     private fun getPlayer(playerId: String): WrappedPlayer {
-        return players[playerId] ?: error("Player with id $playerId was not created!")
+        return players[playerId] ?: error("Player has not yet been created or has already been disposed.")
     }
 
     fun getApplicationContext(): Context {
@@ -232,11 +239,20 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
     }
 
     fun handleDuration(player: WrappedPlayer) {
-        player.eventHandler.success("audio.onDuration", hashMapOf("value" to (player.getDuration() ?: 0)))
+        handler.post {
+            player.eventHandler.success(
+                "audio.onDuration",
+                hashMapOf("value" to (player.getDuration() ?: 0)),
+            )
+        }
     }
 
     fun handleComplete(player: WrappedPlayer) {
-        player.eventHandler.success("audio.onComplete")
+        handler.post { player.eventHandler.success("audio.onComplete") }
+    }
+
+    fun handlePrepared(player: WrappedPlayer, isPrepared: Boolean) {
+        handler.post { player.eventHandler.success("audio.onPrepared", hashMapOf("value" to isPrepared)) }
     }
 
     fun handleLog(player: WrappedPlayer, message: String) {
@@ -256,10 +272,13 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
     }
 
     fun handleSeekComplete(player: WrappedPlayer) {
-        player.eventHandler.success("audio.onSeekComplete")
-        player.eventHandler.success(
-            "audio.onCurrentPosition", hashMapOf("value" to (player.getCurrentPosition() ?: 0))
-        )
+        handler.post {
+            player.eventHandler.success("audio.onSeekComplete")
+            player.eventHandler.success(
+                "audio.onCurrentPosition",
+                hashMapOf("value" to (player.getCurrentPosition() ?: 0)),
+            )
+        }
     }
 
     override fun startUpdates() {
@@ -267,7 +286,7 @@ class AudioplayersPlugin : FlutterPlugin, IUpdateCallback {
     }
 
     override fun stopUpdates() {
-        handler.removeCallbacksAndMessages(null)
+        updateRunnable?.let { handler.removeCallbacks(it) }
     }
 
     private class UpdateRunnable(
@@ -328,12 +347,12 @@ private fun MethodCall.audioContext(): AudioContextAndroid {
         stayAwake = argument<Boolean>("stayAwake") ?: error("stayAwake is required"),
         contentType = argument<Int>("contentType") ?: error("contentType is required"),
         usageType = argument<Int>("usageType") ?: error("usageType is required"),
-        audioFocus = argument<Int>("audioFocus"),
+        audioFocus = argument<Int>("audioFocus") ?: error("audioFocus is required"),
         audioMode = argument<Int>("audioMode") ?: error("audioMode is required"),
     )
 }
 
-class EventHandler(eventChannel: EventChannel) : EventChannel.StreamHandler {
+class EventHandler(private val eventChannel: EventChannel) : EventChannel.StreamHandler {
     private var eventSink: EventChannel.EventSink? = null
 
     init {
@@ -356,7 +375,11 @@ class EventHandler(eventChannel: EventChannel) : EventChannel.StreamHandler {
         eventSink?.error(errorCode, errorMessage, errorDetails)
     }
 
-    fun endOfStream() {
-        eventSink?.endOfStream()
+    fun dispose() {
+        eventSink?.let {
+            it.endOfStream()
+            onCancel(null)
+        }
+        eventChannel.setStreamHandler(null)
     }
 }

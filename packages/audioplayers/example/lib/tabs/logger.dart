@@ -5,13 +5,16 @@ import 'package:flutter/material.dart';
 class LoggerTab extends StatefulWidget {
   final AudioPlayer player;
 
-  const LoggerTab({super.key, required this.player});
+  const LoggerTab({
+    required this.player,
+    super.key,
+  });
 
   @override
-  _LoggerTabState createState() => _LoggerTabState();
+  LoggerTabState createState() => LoggerTabState();
 }
 
-class _LoggerTabState extends State<LoggerTab>
+class LoggerTabState extends State<LoggerTab>
     with AutomaticKeepAliveClientMixin<LoggerTab> {
   AudioLogLevel get currentLogLevel => AudioLogger.logLevel;
 
@@ -132,10 +135,10 @@ class LogView extends StatelessWidget {
   final VoidCallback onDelete;
 
   const LogView({
-    super.key,
     required this.logs,
     required this.title,
     required this.onDelete,
+    super.key,
   });
 
   @override
@@ -146,7 +149,7 @@ class LogView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(title),
-            IconButton(onPressed: onDelete, icon: const Icon(Icons.delete))
+            IconButton(onPressed: onDelete, icon: const Icon(Icons.delete)),
           ],
         ),
         Expanded(
@@ -162,7 +165,7 @@ class LogView extends StatelessWidget {
                             ? const TextStyle(color: Colors.red)
                             : null,
                       ),
-                      Divider(color: Colors.grey.shade400)
+                      Divider(color: Colors.grey.shade400),
                     ],
                   ),
                 )

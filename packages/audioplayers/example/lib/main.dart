@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
-import 'package:audioplayers_example/components/indexed_stack.dart';
 import 'package:audioplayers_example/components/tabs.dart';
 import 'package:audioplayers_example/components/tgl.dart';
 import 'package:audioplayers_example/tabs/audio_context.dart';
@@ -16,18 +15,19 @@ const defaultPlayerCount = 4;
 
 typedef OnError = void Function(Exception exception);
 
+/// The app is deployed at: https://bluefireteam.github.io/audioplayers/
 void main() {
-  runApp(const MaterialApp(home: ExampleApp()));
+  runApp(const MaterialApp(home: _ExampleApp()));
 }
 
-class ExampleApp extends StatefulWidget {
-  const ExampleApp({super.key});
+class _ExampleApp extends StatefulWidget {
+  const _ExampleApp();
 
   @override
   _ExampleAppState createState() => _ExampleAppState();
 }
 
-class _ExampleAppState extends State<ExampleApp> {
+class _ExampleAppState extends State<_ExampleApp> {
   List<AudioPlayer> audioPlayers = List.generate(
     defaultPlayerCount,
     (_) => AudioPlayer()..setReleaseMode(ReleaseMode.stop),
@@ -90,8 +90,7 @@ class _ExampleAppState extends State<ExampleApp> {
       case PopupAction.remove:
         setState(() {
           if (audioPlayers.isNotEmpty) {
-            selectedAudioPlayer.stop();
-            selectedAudioPlayer.release();
+            selectedAudioPlayer.dispose();
             audioPlayers.removeAt(selectedPlayerIdx);
           }
           // Adjust index to be in valid range
@@ -149,7 +148,7 @@ class _ExampleAppState extends State<ExampleApp> {
           Expanded(
             child: audioPlayers.isEmpty
                 ? const Text('No AudioPlayer available!')
-                : IndexedStack2(
+                : IndexedStack(
                     index: selectedPlayerIdx,
                     children: audioPlayers
                         .map(

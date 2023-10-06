@@ -33,6 +33,7 @@ add_library(${PLUGIN_NAME} SHARED
   "audioplayers_windows_plugin.cpp"
   "audio_player.h"
   "audio_player.cpp"
+  "audioplayers_helpers.h"
   "event_stream_handler.h"
   "MediaEngineExtension.h"
   "MediaEngineExtension.cpp"
@@ -51,6 +52,7 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+target_link_libraries(${PLUGIN_NAME} PRIVATE shlwapi)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(audioplayers_windows_bundled_libraries

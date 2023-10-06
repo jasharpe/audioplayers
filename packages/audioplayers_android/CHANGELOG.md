@@ -1,3 +1,46 @@
+## 4.0.2
+
+ - **REFACTOR**: Lint Kotlin, C and C++ code ([#1610](https://github.com/bluefireteam/audioplayers/issues/1610)). ([05394668](https://github.com/bluefireteam/audioplayers/commit/0539466850aaa49a0bde9448939c6c3d536dd6e2))
+ - **FIX**: Set playback rate only when playing ([#1658](https://github.com/bluefireteam/audioplayers/issues/1658)). ([d73c7d5c](https://github.com/bluefireteam/audioplayers/commit/d73c7d5c2ef13e8eff2c438b96ade6e2483a2014))
+ - **FIX**: Improve Error handling for Unsupported Sources ([#1625](https://github.com/bluefireteam/audioplayers/issues/1625)). ([a4d84422](https://github.com/bluefireteam/audioplayers/commit/a4d84422f1421755b05aa7eff38b4d2ed0cf7482))
+ - **FIX**: Return null for duration and position, if not available ([#1606](https://github.com/bluefireteam/audioplayers/issues/1606)). ([2a79644a](https://github.com/bluefireteam/audioplayers/commit/2a79644a2064ccc5d8e9a31aaf888b0b60ee321d))
+
+## 4.0.1
+
+ - **REVERT**(android): Upgrade androidx.core:core-ktx, restore support for AGP7 ([#1590](https://github.com/bluefireteam/audioplayers/issues/1590)). ([f6bf1260](https://github.com/bluefireteam/audioplayers/commit/f6bf12609ec9e457451f1c786522bff28a1555f4))
+
+## 4.0.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**(android): Allow AudioFocus.none ([#1534](https://github.com/bluefireteam/audioplayers/issues/1534)). ([858d3f44](https://github.com/bluefireteam/audioplayers/commit/858d3f4410b1bc7b203090c20cf60b5136dad4fe))
+ - **FEAT**(android): Add support for AGP 8 in example, add compileOptions to build.gradle ([#1503](https://github.com/bluefireteam/audioplayers/issues/1503)). ([7c08e4e1](https://github.com/bluefireteam/audioplayers/commit/7c08e4e1a524f53294f6967996fd31837e62cb81))
+ - **BREAKING** **FIX**: Default audio output to system preferences ([#1563](https://github.com/bluefireteam/audioplayers/issues/1563)). ([381c43e3](https://github.com/bluefireteam/audioplayers/commit/381c43e3725fbb0cb4fd35982893a3c92b188886))
+ - **BREAKING** **CHORE**: Bump Flutter to version 3.10.x ([#1529](https://github.com/bluefireteam/audioplayers/issues/1529)). ([c1296c9b](https://github.com/bluefireteam/audioplayers/commit/c1296c9ba0cc43284b31d78f2f484454fbf6b773))
+
+## 3.0.2
+
+ - **FIX**(android): `onComplete` is not called when audio has completed playing ([#1523](https://github.com/bluefireteam/audioplayers/issues/1523)). ([293d6c0e](https://github.com/bluefireteam/audioplayers/commit/293d6c0eec1d89ad200b2914cae0adf644b25013))
+ - **FIX**: Timeout on setting same source twice  ([#1520](https://github.com/bluefireteam/audioplayers/issues/1520)). ([5d164d1f](https://github.com/bluefireteam/audioplayers/commit/5d164d1f20463a8a31a228cd1d85252d47ae256e))
+ - **FIX**: test and fix compatibility with min flutter version ([#1510](https://github.com/bluefireteam/audioplayers/issues/1510)). ([9f39e95f](https://github.com/bluefireteam/audioplayers/commit/9f39e95ff7913d8fc30fff27fef7aefc32de26fb))
+ - **FIX**(android): Add AGP 8 support with namespace property ([#1514](https://github.com/bluefireteam/audioplayers/issues/1514)). ([8d7b322e](https://github.com/bluefireteam/audioplayers/commit/8d7b322e79fd802fb75ca72f5c8ac388754cd406))
+ - **FIX**: onPrepared event to wait until player is ready / finished loading the source ([#1469](https://github.com/bluefireteam/audioplayers/issues/1469)). ([50f56365](https://github.com/bluefireteam/audioplayers/commit/50f56365f8e512df0fc5bdb7222614389cbd4ea0))
+ - **FIX**: rework dispose ([#1480](https://github.com/bluefireteam/audioplayers/issues/1480)). ([c64ef6d9](https://github.com/bluefireteam/audioplayers/commit/c64ef6d914a52743128c717b90c4da0abbd7538d))
+
+## 3.0.1
+
+ - **FIX**: dispose player implementation ([#1470](https://github.com/bluefireteam/audioplayers/issues/1470)). ([d9026c15](https://github.com/bluefireteam/audioplayers/commit/d9026c1538cc83dfba5745771ad71c307b6da852))
+
+## 3.0.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**(android): Avoid calling onDuration on position event (closes [#136](https://github.com/bluefireteam/audioplayers/issues/136)) ([#1460](https://github.com/bluefireteam/audioplayers/issues/1460)). ([6cfb3753](https://github.com/bluefireteam/audioplayers/commit/6cfb3753cd8003f341d97e0b2417d4512f452267))
+ - **FIX**(android): reset prepared state on player error ([#1425](https://github.com/bluefireteam/audioplayers/issues/1425)). ([6f24c8f5](https://github.com/bluefireteam/audioplayers/commit/6f24c8f57e4549edbf7d68a021d1d94371c23f3f))
+ - **FEAT**(android): add `setBalance` ([#58](https://github.com/bluefireteam/audioplayers/issues/58)) ([#1444](https://github.com/bluefireteam/audioplayers/issues/1444)). ([3b5de50e](https://github.com/bluefireteam/audioplayers/commit/3b5de50ea7fa5248165616fc1ffd80da6c66583a))
+ - **DOCS**: update AudioCache explanation, migration guide, replace package READMEs ([#1457](https://github.com/bluefireteam/audioplayers/issues/1457)). ([b8eb1974](https://github.com/bluefireteam/audioplayers/commit/b8eb197435631fafeaa9a26eb76aca8e43e86420))
+ - **BREAKING** **FEAT**: event channel ([#1352](https://github.com/bluefireteam/audioplayers/issues/1352)). ([c9fd6a76](https://github.com/bluefireteam/audioplayers/commit/c9fd6a762c8c346d8d5598e3550c5571a5e460f0))
+
 ## 2.0.0
 
 > Note: This release has breaking changes.

@@ -2,9 +2,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../platform_features.dart';
-import '../source_test_data.dart';
-import '../test_utils.dart';
+import '../../platform_features.dart';
+import '../../test_utils.dart';
+import '../app_source_test_data.dart';
+import '../app_test_utils.dart';
 import 'properties.dart';
 
 Future<void> testStreamsTab(
@@ -22,10 +23,7 @@ Future<void> testStreamsTab(
     await tester.testPosition(Duration.zero);
   }
 
-  final isImmediateDurationSupported =
-      features.hasMp3Duration || !audioSourceTestData.sourceKey.contains('mp3');
-
-  if (features.hasDurationEvent && isImmediateDurationSupported) {
+  if (features.hasDurationEvent && !audioSourceTestData.isVBR) {
     // Display duration before playing
     await tester.testDuration(audioSourceTestData.duration);
   }
@@ -40,7 +38,7 @@ Future<void> testStreamsTab(
   // Cannot test more precisely as it is dependent on pollInterval
   // and updateInterval of native implementation.
   if (audioSourceTestData.isLiveStream ||
-      audioSourceTestData.duration > const Duration(seconds: 2)) {
+      audioSourceTestData.duration! > const Duration(seconds: 2)) {
     // Test player state: playing
     if (features.hasPlayerStateEvent) {
       // Only test, if there's enough time to be able to check playing state.
@@ -52,7 +50,7 @@ Future<void> testStreamsTab(
     if (features.hasPositionEvent) {
       await tester.testPosition(
         Duration.zero,
-        matcher: greaterThan,
+        matcher: (Duration? position) => greaterThan(position ?? Duration.zero),
         timeout: timeout,
       );
       await tester.testOnPosition(
@@ -65,7 +63,10 @@ Future<void> testStreamsTab(
 
   if (features.hasDurationEvent && !audioSourceTestData.isLiveStream) {
     // Test if onDurationText is set.
-    await tester.testOnDuration(audioSourceTestData.duration, timeout: timeout);
+    await tester.testOnDuration(
+      audioSourceTestData.duration!,
+      timeout: timeout,
+    );
   }
 
   const sampleDuration = Duration(seconds: 3);
@@ -74,10 +75,10 @@ Future<void> testStreamsTab(
   // Test player states: pause, stop, completed
   if (features.hasPlayerStateEvent) {
     if (!audioSourceTestData.isLiveStream) {
-      if (audioSourceTestData.duration < const Duration(seconds: 2)) {
+      if (audioSourceTestData.duration! < const Duration(seconds: 2)) {
         await tester.testPlayerState(PlayerState.completed, timeout: timeout);
         await tester.testOnPlayerState(PlayerState.completed, timeout: timeout);
-      } else if (audioSourceTestData.duration > const Duration(seconds: 5)) {
+      } else if (audioSourceTestData.duration! > const Duration(seconds: 5)) {
         await tester.scrollToAndTap(const Key('pause_button'));
         await tester.pumpAndSettle();
         await tester.testPlayerState(PlayerState.paused);
@@ -104,7 +105,7 @@ Future<void> testStreamsTab(
     await tester.testDuration(audioSourceTestData.duration);
     if (!audioSourceTestData.isLiveStream) {
       await tester.testOnDuration(
-        audioSourceTestData.duration,
+        audioSourceTestData.duration!,
         timeout: timeout,
       );
     }
@@ -115,17 +116,19 @@ Future<void> testStreamsTab(
 }
 
 extension StreamWidgetTester on WidgetTester {
-  // Precision for duration & position:
-  // Android: two tenth of a second
+  // Precision for position & duration:
+  // Android: millisecond
   // Windows: millisecond
-  // Linux: second
-  // Web: second
+  // Linux: millisecond
+  // Web: millisecond
+  // Darwin: millisecond
 
-  // Update interval for duration & position:
-  // Android: two tenth of a second
+  // Update interval for position:
+  // Android: ~200ms
   // Windows: ~250ms
-  // Linux: second
-  // Web: second
+  // Linux: ~250ms
+  // Web: ~250ms
+  // Darwin: ~200ms
 
   Future<void> stopStream() async {
     final st = StackTrace.current.toString();
@@ -144,7 +147,11 @@ extension StreamWidgetTester on WidgetTester {
     await waitFor(
       () async => expectWidgetHasDuration(
         const Key('onDurationText'),
-        matcher: (Duration? actual) => durationRangeMatcher(actual, duration),
+        matcher: (Duration? actual) => durationRangeMatcher(
+          actual,
+          duration,
+          deviation: const Duration(milliseconds: 500),
+        ),
       ),
       timeout: timeout,
       stackTrace: st,

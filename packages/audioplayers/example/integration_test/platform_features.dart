@@ -58,7 +58,6 @@ class PlatformFeatures {
   );
 
   static const windowsPlatformFeatures = PlatformFeatures(
-    hasBytesSource: false,
     hasPlaylistSourceType: false,
     hasLowLatency: false,
     hasReleaseModeRelease: false,
@@ -85,9 +84,9 @@ class PlatformFeatures {
   final bool hasMp3Duration;
 
   final bool hasPlaybackRate;
-  final bool hasForceSpeaker;
+  final bool hasForceSpeaker; // Not yet tested
   final bool hasDuckAudio; // Not yet tested
-  final bool hasRespectSilence; // Not yet tested
+  final bool hasRespectSilence;
   final bool hasStayAwake; // Not yet tested
   final bool hasRecordingActive; // Not yet tested
   final bool hasPlayingRoute; // Not yet tested

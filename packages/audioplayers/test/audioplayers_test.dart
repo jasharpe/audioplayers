@@ -32,15 +32,17 @@ void main() {
       expect(player.source, null);
     });
 
-    test('#setSource', () async {
+    test('#setSource and #dispose', () async {
       await player.setSource(UrlSource('internet.com/file.mp3'));
       expect(platform.popLastCall().method, 'setSourceUrl');
       expect(player.source, isInstanceOf<UrlSource>());
       final urlSource = player.source as UrlSource?;
       expect(urlSource?.url, 'internet.com/file.mp3');
 
-      await player.release();
-      expect(platform.popLastCall().method, 'release');
+      await player.dispose();
+      expect(platform.popCall().method, 'stop');
+      expect(platform.popCall().method, 'release');
+      expect(platform.popLastCall().method, 'dispose');
       expect(player.source, null);
     });
 
@@ -90,6 +92,29 @@ void main() {
       await player.pause();
       expect(platform.popLastCall().method, 'pause');
     });
+
+    test('set #volume, #balance, #playbackRate, #playerMode, #releaseMode',
+        () async {
+      await player.setVolume(0.1);
+      expect(player.volume, 0.1);
+      expect(platform.popLastCall().method, 'setVolume');
+
+      await player.setBalance(0.2);
+      expect(player.balance, 0.2);
+      expect(platform.popLastCall().method, 'setBalance');
+
+      await player.setPlaybackRate(0.3);
+      expect(player.playbackRate, 0.3);
+      expect(platform.popLastCall().method, 'setPlaybackRate');
+
+      await player.setPlayerMode(PlayerMode.lowLatency);
+      expect(player.mode, PlayerMode.lowLatency);
+      expect(platform.popLastCall().method, 'setPlayerMode');
+
+      await player.setReleaseMode(ReleaseMode.loop);
+      expect(player.releaseMode, ReleaseMode.loop);
+      expect(platform.popLastCall().method, 'setReleaseMode');
+    });
   });
 
   group('AudioPlayers Events', () {
@@ -127,8 +152,8 @@ void main() {
         emitsInOrder(audioEvents),
       );
 
-      audioEvents.forEach(platform.eventStreamController.add);
-      await platform.eventStreamController.close();
+      audioEvents.forEach(platform.eventStreamControllers['p1']!.add);
+      await platform.eventStreamControllers['p1']!.close();
     });
   });
 }

@@ -50,9 +50,9 @@ class AudioPool {
   /// Creates an [AudioPool] instance with the given parameters.
   static Future<AudioPool> create({
     required Source source,
+    required int maxPlayers,
     AudioCache? audioCache,
     int minPlayers = 1,
-    required int maxPlayers,
   }) async {
     final instance = AudioPool._(
       source: source,
@@ -71,9 +71,9 @@ class AudioPool {
   /// Creates an [AudioPool] instance with the asset from the given [path].
   static Future<AudioPool> createFromAsset({
     required String path,
+    required int maxPlayers,
     AudioCache? audioCache,
     int minPlayers = 1,
-    required int maxPlayers,
   }) async {
     return create(
       source: AssetSource(path),
@@ -123,4 +123,8 @@ class AudioPool {
     await player.setReleaseMode(ReleaseMode.stop);
     return player;
   }
+
+  /// Disposes the audio pool. Then it cannot be used anymore.
+  Future<void> dispose() =>
+      Future.wait(availablePlayers.map((e) => e.dispose()));
 }

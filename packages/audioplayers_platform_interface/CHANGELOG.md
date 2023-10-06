@@ -1,3 +1,48 @@
+## 6.1.0
+
+ - **FIX**: Return null for duration and position, if not available ([#1606](https://github.com/bluefireteam/audioplayers/issues/1606)). ([2a79644a](https://github.com/bluefireteam/audioplayers/commit/2a79644a2064ccc5d8e9a31aaf888b0b60ee321d))
+ - **FEAT**: create, dispose & reuse event stream ([#1609](https://github.com/bluefireteam/audioplayers/issues/1609)). ([efbabf5c](https://github.com/bluefireteam/audioplayers/commit/efbabf5cb30de0013fe3b67cb7206de602f1dc84))
+
+## 6.0.0
+
+> Note: This release has breaking changes.
+
+ - **FIX**(android): Allow AudioFocus.none ([#1534](https://github.com/bluefireteam/audioplayers/issues/1534)). ([858d3f44](https://github.com/bluefireteam/audioplayers/commit/858d3f4410b1bc7b203090c20cf60b5136dad4fe))
+ - **BREAKING** **FIX**: Default audio output to system preferences ([#1563](https://github.com/bluefireteam/audioplayers/issues/1563)). ([381c43e3](https://github.com/bluefireteam/audioplayers/commit/381c43e3725fbb0cb4fd35982893a3c92b188886))
+ - **BREAKING** **CHORE**: Bump Flutter to version 3.10.x ([#1529](https://github.com/bluefireteam/audioplayers/issues/1529)). ([c1296c9b](https://github.com/bluefireteam/audioplayers/commit/c1296c9ba0cc43284b31d78f2f484454fbf6b773))
+
+## 5.0.1
+
+ - **FIX**: AudioEvent missing `isPrepared` logic ([#1521](https://github.com/bluefireteam/audioplayers/issues/1521)). ([1fa46c2c](https://github.com/bluefireteam/audioplayers/commit/1fa46c2cd28a4640c4aae65deee91ffe46cc4425))
+ - **FIX**: test and fix compatibility with min flutter version ([#1510](https://github.com/bluefireteam/audioplayers/issues/1510)). ([9f39e95f](https://github.com/bluefireteam/audioplayers/commit/9f39e95ff7913d8fc30fff27fef7aefc32de26fb))
+ - **FIX**: onPrepared event to wait until player is ready / finished loading the source ([#1469](https://github.com/bluefireteam/audioplayers/issues/1469)). ([50f56365](https://github.com/bluefireteam/audioplayers/commit/50f56365f8e512df0fc5bdb7222614389cbd4ea0))
+ - **FIX**: rework dispose ([#1480](https://github.com/bluefireteam/audioplayers/issues/1480)). ([c64ef6d9](https://github.com/bluefireteam/audioplayers/commit/c64ef6d914a52743128c717b90c4da0abbd7538d))
+ - **DOCS**: Improve doc for 'AudioContextConfig.respectSilence' ([#1490](https://github.com/bluefireteam/audioplayers/issues/1490)) ([#1500](https://github.com/bluefireteam/audioplayers/issues/1500)). ([415dda3b](https://github.com/bluefireteam/audioplayers/commit/415dda3b1621c57ea4b0366187f27f6a189555bf))
+
+## 5.0.0
+
+> Note: This release has breaking changes.
+
+ - **FEAT**: replace `Platform.isX` with `defaultTargetPlatform` ([#1446](https://github.com/bluefireteam/audioplayers/issues/1446)). ([6cd5656c](https://github.com/bluefireteam/audioplayers/commit/6cd5656c0c5deaab1fb4af78a5b7632402c3a1d3))
+ - **FEAT**: extract AudioContext from audio_context_config ([#1440](https://github.com/bluefireteam/audioplayers/issues/1440)). ([e59c3b9f](https://github.com/bluefireteam/audioplayers/commit/e59c3b9f07c1a72f9bf4e424fa3b011645f191d2))
+ - **DOCS**: update AudioCache explanation, migration guide, replace package READMEs ([#1457](https://github.com/bluefireteam/audioplayers/issues/1457)). ([b8eb1974](https://github.com/bluefireteam/audioplayers/commit/b8eb197435631fafeaa9a26eb76aca8e43e86420))
+ - **BREAKING** **REFACTOR**: prevent from confusing and conflicting class names ([#1465](https://github.com/bluefireteam/audioplayers/issues/1465)). ([7cdb8586](https://github.com/bluefireteam/audioplayers/commit/7cdb858605f24f0abd1a225e04922830233f3e96))
+ - **BREAKING** **REFACTOR**: improve separation of global audioplayer interface ([#1443](https://github.com/bluefireteam/audioplayers/issues/1443)). ([c0b3f85c](https://github.com/bluefireteam/audioplayers/commit/c0b3f85c477f0313299cc2a2898840d6c7d8dcd9))
+ - **BREAKING** **FEAT**: event channel ([#1352](https://github.com/bluefireteam/audioplayers/issues/1352)). ([c9fd6a76](https://github.com/bluefireteam/audioplayers/commit/c9fd6a762c8c346d8d5598e3550c5571a5e460f0))
+ - **BREAKING** **FEAT**: expose classes of package `audioplayers_platform_interface` ([#1442](https://github.com/bluefireteam/audioplayers/issues/1442)). ([a6f89be1](https://github.com/bluefireteam/audioplayers/commit/a6f89be181b7bd664eaf96cb9509bbc5adf5dbb9))
+
+### Migration instructions
+
+| Before | After |
+|---|---|
+| `LogLevel` | _moved_ to `audioplayers` package as `AudioLogLevel` |
+| `AudioplayersPlatform` | `AudioplayersPlatformInterface` |
+| `MethodChannelAudioplayersPlatform` | `AudioplayersPlatform` |
+| `GlobalPlatformInterface` | `GlobalAudioplayersPlatformInterface` |
+| `MethodChannelGlobalPlatform` | `GlobalAudioplayersPlatform` |
+| `StreamsInterface` | _removed_ |
+| `ForPlayer<>` | _removed_ |
+
 ## 4.0.0
 
 > Note: This release has breaking changes.

@@ -10,7 +10,10 @@ import 'package:flutter/material.dart';
 class ControlsTab extends StatefulWidget {
   final AudioPlayer player;
 
-  const ControlsTab({super.key, required this.player});
+  const ControlsTab({
+    required this.player,
+    super.key,
+  });
 
   @override
   State<ControlsTab> createState() => _ControlsTabState();
@@ -113,8 +116,8 @@ class _ControlsTabState extends State<ControlsTab>
             EnumTgl<PlayerMode>(
               key: const Key('control-player-mode'),
               options: {
-                for (var e in PlayerMode.values)
-                  'control-player-mode-${e.name}': e
+                for (final e in PlayerMode.values)
+                  'control-player-mode-${e.name}': e,
               },
               selected: widget.player.mode,
               onChange: (playerMode) async {
@@ -129,8 +132,8 @@ class _ControlsTabState extends State<ControlsTab>
             EnumTgl<ReleaseMode>(
               key: const Key('control-release-mode'),
               options: {
-                for (var e in ReleaseMode.values)
-                  'control-release-mode-${e.name}': e
+                for (final e in ReleaseMode.values)
+                  'control-release-mode-${e.name}': e,
               },
               selected: widget.player.releaseMode,
               onChange: (releaseMode) async {
@@ -156,7 +159,7 @@ class _ControlsTabState extends State<ControlsTab>
               txt: 'Custom',
               onPressed: () async {
                 dialog(
-                  SeekDialog(
+                  _SeekDialog(
                     value: modalInputSeek,
                     setValue: (it) => setState(() => modalInputSeek = it),
                     seekDuration: () => _seekDuration(
@@ -181,14 +184,13 @@ class _ControlsTabState extends State<ControlsTab>
   bool get wantKeepAlive => true;
 }
 
-class SeekDialog extends StatelessWidget {
+class _SeekDialog extends StatelessWidget {
   final VoidCallback seekDuration;
   final VoidCallback seekPercent;
   final void Function(String val) setValue;
   final String value;
 
-  const SeekDialog({
-    super.key,
+  const _SeekDialog({
     required this.seekDuration,
     required this.seekPercent,
     required this.value,
@@ -206,7 +208,7 @@ class SeekDialog extends StatelessWidget {
           onChange: setValue,
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Btn(
               txt: 'millis',
@@ -229,9 +231,9 @@ class SeekDialog extends StatelessWidget {
                 seekPercent();
               },
             ),
-            Btn(
-              txt: 'Cancel',
+            TextButton(
               onPressed: Navigator.of(context).pop,
+              child: const Text('Cancel'),
             ),
           ],
         ),

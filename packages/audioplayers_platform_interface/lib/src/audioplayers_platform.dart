@@ -1,7 +1,4 @@
 import 'dart:async';
-// TODO(gustl22): remove when upgrading min Flutter version to >=3.3.0
-// ignore: unnecessary_import
-import 'dart:typed_data';
 
 import 'package:audioplayers_platform_interface/src/api/audio_context.dart';
 import 'package:audioplayers_platform_interface/src/api/audio_event.dart';
@@ -15,6 +12,18 @@ import 'package:flutter/services.dart';
 class AudioplayersPlatform extends AudioplayersPlatformInterface
     with MethodChannelAudioplayersPlatform, EventChannelAudioplayersPlatform {
   AudioplayersPlatform();
+
+  @override
+  Future<void> create(String playerId) async {
+    await super.create(playerId);
+    createEventStream(playerId);
+  }
+
+  @override
+  Future<void> dispose(String playerId) async {
+    await super.dispose(playerId);
+    disposeEventStream(playerId);
+  }
 }
 
 mixin MethodChannelAudioplayersPlatform
@@ -215,34 +224,42 @@ mixin MethodChannelAudioplayersPlatform
 
 mixin EventChannelAudioplayersPlatform
     implements EventChannelAudioplayersPlatformInterface {
-  @override
-  Stream<AudioEvent> getEventStream(String playerId) {
-    // Only can be used after have created the event channel on the native side.
-    final eventChannel = EventChannel('xyz.luan/audioplayers/events/$playerId');
+  final Map<String, Stream<AudioEvent>> streams = {};
 
-    return eventChannel.receiveBroadcastStream().map(
+  // Only can be used after have created the event channel on the native side.
+  void createEventStream(String playerId) {
+    final eventChannel = EventChannel('xyz.luan/audioplayers/events/$playerId');
+    streams[playerId] = eventChannel.receiveBroadcastStream().map(
       (dynamic event) {
         final map = event as Map<dynamic, dynamic>;
         final eventType = map.getString('event');
         switch (eventType) {
           case 'audio.onDuration':
             final millis = map.getInt('value');
-            final duration = Duration(milliseconds: millis);
             return AudioEvent(
               eventType: AudioEventType.duration,
-              duration: duration,
+              duration: millis != null
+                  ? Duration(milliseconds: millis)
+                  : Duration.zero,
             );
           case 'audio.onCurrentPosition':
             final millis = map.getInt('value');
-            final position = Duration(milliseconds: millis);
             return AudioEvent(
               eventType: AudioEventType.position,
-              position: position,
+              position: millis != null
+                  ? Duration(milliseconds: millis)
+                  : Duration.zero,
             );
           case 'audio.onComplete':
             return const AudioEvent(eventType: AudioEventType.complete);
           case 'audio.onSeekComplete':
             return const AudioEvent(eventType: AudioEventType.seekComplete);
+          case 'audio.onPrepared':
+            final isPrepared = map.getBool('value');
+            return AudioEvent(
+              eventType: AudioEventType.prepared,
+              isPrepared: isPrepared,
+            );
           case 'audio.onLog':
             final value = map.getString('value');
             return AudioEvent(
@@ -254,5 +271,16 @@ mixin EventChannelAudioplayersPlatform
         }
       },
     );
+  }
+
+  void disposeEventStream(String playerId) {
+    if (streams.containsKey(playerId)) {
+      streams.remove(playerId);
+    }
+  }
+
+  @override
+  Stream<AudioEvent> getEventStream(String playerId) {
+    return streams[playerId]!;
   }
 }

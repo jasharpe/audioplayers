@@ -46,70 +46,77 @@
 using namespace winrt;
 
 class AudioPlayer {
-   public:
-    AudioPlayer(std::string playerId,
-                flutter::MethodChannel<flutter::EncodableValue>* methodChannel,
-                EventStreamHandler<>* eventHandler);
+ public:
+  AudioPlayer(std::string playerId,
+              flutter::MethodChannel<flutter::EncodableValue>* methodChannel,
+              EventStreamHandler<>* eventHandler);
 
-    void Dispose();
+  void Dispose();
 
-    void SetLooping(bool isLooping);
+  void ReleaseMediaSource();
 
-    void SetVolume(double volume);
+  void SetLooping(bool isLooping);
 
-    void SetPlaybackSpeed(double playbackSpeed);
+  void SetVolume(double volume);
 
-    void SetBalance(double balance);
+  void SetPlaybackSpeed(double playbackSpeed);
 
-    void Play();
+  void SetBalance(double balance);
 
-    void Pause();
+  void Play();
 
-    void Resume();
+  void Pause();
 
-    bool GetLooping();
+  void Resume();
 
-    int64_t GetPosition();
+  bool GetLooping();
 
-    int64_t GetDuration();
+  double GetPosition();
 
-    void SeekTo(int64_t seek);
+  double GetDuration();
 
-    void SetSourceUrl(std::string url);
+  void SeekTo(double seek);
 
-    void OnLog(const std::string& message);
+  void SetSourceBytes(std::vector<uint8_t> bytes);
 
-    void OnError(const std::string& code, const std::string& message,
-                 const flutter::EncodableValue& details);
+  void SetSourceUrl(std::string url);
 
-    virtual ~AudioPlayer();
+  void OnLog(const std::string& message);
 
-   private:
-    // Media members
-    media::MFPlatformRef m_mfPlatform;
-    winrt::com_ptr<media::MediaEngineWrapper> m_mediaEngineWrapper;
+  void OnError(const std::string& code,
+               const std::string& message,
+               const flutter::EncodableValue& details);
 
-    bool _isInitialized = false;
-    std::string _url{};
+  virtual ~AudioPlayer();
 
-    void SendInitialized();
+ private:
+  // Media members
+  media::MFPlatformRef m_mfPlatform;
+  winrt::com_ptr<media::MediaEngineWrapper> m_mediaEngineWrapper;
 
-    void OnMediaError(MF_MEDIA_ENGINE_ERR error, HRESULT hr);
+  bool _isInitialized = false;
+  std::string _url{};
 
-    void OnMediaStateChange(
-        media::MediaEngineWrapper::BufferingState bufferingState);
+  void SendInitialized();
 
-    void OnPlaybackEnded();
+  void OnMediaError(MF_MEDIA_ENGINE_ERR error, HRESULT hr);
 
-    void OnDurationUpdate();
+  void OnMediaStateChange(
+      media::MediaEngineWrapper::BufferingState bufferingState);
 
-    void OnTimeUpdate();
+  void OnPlaybackEnded();
 
-    void OnSeekCompleted();
+  void OnDurationUpdate();
 
-    std::string _playerId;
+  void OnTimeUpdate();
 
-    flutter::MethodChannel<flutter::EncodableValue>* _methodChannel;
+  void OnSeekCompleted();
 
-    EventStreamHandler<>* _eventHandler;
+  void OnPrepared(bool isPrepared);
+
+  std::string _playerId;
+
+  flutter::MethodChannel<flutter::EncodableValue>* _methodChannel;
+
+  EventStreamHandler<>* _eventHandler;
 };

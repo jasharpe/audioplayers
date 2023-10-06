@@ -5,7 +5,10 @@ import 'package:flutter/material.dart';
 class PropertiesWidget extends StatefulWidget {
   final AudioPlayer player;
 
-  const PropertiesWidget({super.key, required this.player});
+  const PropertiesWidget({
+    required this.player,
+    super.key,
+  });
 
   @override
   State<PropertiesWidget> createState() => _PropertiesWidgetState();
@@ -70,6 +73,30 @@ class _PropertiesWidgetState extends State<PropertiesWidget> {
           ),
           subtitle: const Text('Source'),
           leading: const Icon(Icons.audio_file),
+        ),
+        ListTile(
+          title: Text(
+            widget.player.volume.toString(),
+            key: const Key('volumeText'),
+          ),
+          subtitle: const Text('Volume'),
+          leading: const Icon(Icons.volume_up),
+        ),
+        ListTile(
+          title: Text(
+            widget.player.balance.toString(),
+            key: const Key('balanceText'),
+          ),
+          subtitle: const Text('Balance'),
+          leading: const Icon(Icons.balance),
+        ),
+        ListTile(
+          title: Text(
+            widget.player.playbackRate.toString(),
+            key: const Key('playbackRateText'),
+          ),
+          subtitle: const Text('Playback Rate'),
+          leading: const Icon(Icons.speed),
         ),
       ],
     );

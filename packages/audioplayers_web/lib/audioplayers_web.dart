@@ -30,7 +30,8 @@ class WebAudioplayersPlatform extends AudioplayersPlatformInterface {
         ? players[playerId]!
         : throw PlatformException(
             code: 'WebAudioError',
-            message: 'Player with id $playerId was not created!',
+            message:
+                'Player has not yet been created or has already been disposed.',
           );
   }
 
@@ -95,12 +96,12 @@ class WebAudioplayersPlatform extends AudioplayersPlatformInterface {
 
   @override
   Future<void> setPlaybackRate(String playerId, double playbackRate) async {
-    getPlayer(playerId).setPlaybackRate(playbackRate);
+    getPlayer(playerId).playbackRate = playbackRate;
   }
 
   @override
   Future<void> setReleaseMode(String playerId, ReleaseMode releaseMode) async {
-    getPlayer(playerId).setReleaseMode(releaseMode);
+    getPlayer(playerId).releaseMode = releaseMode;
   }
 
   @override
@@ -120,12 +121,12 @@ class WebAudioplayersPlatform extends AudioplayersPlatformInterface {
 
   @override
   Future<void> setVolume(String playerId, double volume) async {
-    getPlayer(playerId).setVolume(volume);
+    getPlayer(playerId).volume = volume;
   }
 
   @override
   Future<void> setBalance(String playerId, double balance) async {
-    getPlayer(playerId).setBalance(balance);
+    getPlayer(playerId).balance = balance;
   }
 
   @override
@@ -152,9 +153,8 @@ class WebAudioplayersPlatform extends AudioplayersPlatformInterface {
 
   @override
   Future<void> dispose(String playerId) async {
-    await Future.forEach<WrappedPlayer>(
-      players.values,
-      (player) => player.dispose(),
-    );
+    final player = getPlayer(playerId);
+    await player.dispose();
+    players.remove(playerId);
   }
 }
