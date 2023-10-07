@@ -11,21 +11,25 @@ abstract class PositionUpdater {
 
   final Future<Duration?> Function() getPosition;
   final PlayerState Function() getState;
-  final _positionStreamController = StreamController<Duration>.broadcast();
+  final _streamController = StreamController<Duration>.broadcast();
 
-  Stream<Duration> get positionStream => _positionStreamController.stream;
+  Stream<Duration> get positionStream => _streamController.stream;
+
+  Future<void> updateOnPlay() async {
+    if (getState() == PlayerState.playing) {
+      await update();
+    }
+  }
 
   Future<void> update() async {
-    if (getState() == PlayerState.playing) {
-      final position = await getPosition();
-      if (position != null) {
-        _positionStreamController.add(position);
-      }
+    final position = await getPosition();
+    if (position != null) {
+      _streamController.add(position);
     }
   }
 
   Future<void> dispose() async {
-    await _positionStreamController.close();
+    await _streamController.close();
   }
 }
 
@@ -38,7 +42,7 @@ class TimerPositionUpdater extends PositionUpdater {
     required Duration interval,
   }) {
     _positionStreamTimer = Timer.periodic(interval, (timer) async {
-      await update();
+      await updateOnPlay();
     });
   }
 
@@ -62,7 +66,7 @@ class FramePositionUpdater extends PositionUpdater {
 
   void _tick(Duration? timestamp) {
     if (isRunning) {
-      update();
+      updateOnPlay();
       _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_tick);
     }
   }

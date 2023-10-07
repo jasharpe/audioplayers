@@ -79,6 +79,8 @@ class AudioPlayer {
 
   late final StreamSubscription _onPlayerCompleteStreamSubscription;
 
+  late final StreamSubscription _onSeekCompleteStreamSubscription;
+
   late final StreamSubscription _onLogStreamSubscription;
 
   /// Stream controller to be able to get a stream on initialization, before the
@@ -147,16 +149,20 @@ class AudioPlayer {
       ),
     );
     _onPlayerCompleteStreamSubscription = onPlayerComplete.listen(
-      (_) {
+      (_) async {
         state = PlayerState.completed;
         if (releaseMode == ReleaseMode.release) {
           _source = null;
         }
+        await _positionUpdater.update();
       },
       onError: (Object _, [StackTrace? __]) {
         /* Errors are already handled via log stream */
       },
     );
+    _onSeekCompleteStreamSubscription = onSeekComplete.listen((event) async {
+      await _positionUpdater.update();
+    });
     _create();
     if (positionUpdateInterval != null) {
       _positionUpdater = TimerPositionUpdater(
@@ -230,6 +236,7 @@ class AudioPlayer {
     await creatingCompleter.future;
     await _platform.pause(playerId);
     state = PlayerState.paused;
+    await _positionUpdater.update();
   }
 
   /// Stops the audio that is currently playing.
@@ -240,6 +247,7 @@ class AudioPlayer {
     await creatingCompleter.future;
     await _platform.stop(playerId);
     state = PlayerState.stopped;
+    await _positionUpdater.update();
   }
 
   /// Resumes the audio that has been paused or stopped.
@@ -424,6 +432,7 @@ class AudioPlayer {
     final futures = <Future>[
       if (!_playerStateController.isClosed) _playerStateController.close(),
       _onPlayerCompleteStreamSubscription.cancel(),
+      _onSeekCompleteStreamSubscription.cancel(),
       _onLogStreamSubscription.cancel(),
       _eventStreamSubscription.cancel(),
       _eventStreamController.close(),

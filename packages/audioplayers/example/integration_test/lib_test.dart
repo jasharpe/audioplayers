@@ -106,15 +106,26 @@ void main() async {
             await player.setSource(td.source);
 
             Duration? position;
-            final onPositionSub = player.onPositionChanged
-                .where((event) => event > Duration.zero)
-                .listen((event) => position = event);
+            final onPositionSub =
+                player.onPositionChanged.listen((event) => position = event);
 
             await player.resume();
-            await tester.pumpAndSettle(const Duration(seconds: 1));
-            expect(position, isNotNull);
-            expect(position, greaterThan(Duration.zero));
+            await tester.pumpAndSettle(const Duration(seconds: 5));
+
+            if (td.isLiveStream || td.duration! > const Duration(seconds: 10)) {
+              expect(player.state, PlayerState.playing);
+              expect(position, isNotNull);
+              expect(position, greaterThan(Duration.zero));
+            } else if (td.duration! < const Duration(seconds: 2)) {
+              expect(player.state, PlayerState.completed);
+              expect(position, Duration.zero);
+            } else {
+              // Don't know for sure, if has yet completed or is still playing
+            }
+
             await player.stop();
+            expect(player.state, PlayerState.stopped);
+            expect(position, Duration.zero);
             await onPositionSub.cancel();
             await tester.pumpLinux();
           },
