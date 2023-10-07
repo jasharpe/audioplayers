@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:audioplayers/src/position_updater.dart';
 import 'package:audioplayers/src/uri_ext.dart';
 import 'package:audioplayers_platform_interface/audioplayers_platform_interface.dart';
 import 'package:flutter/services.dart';
@@ -69,6 +70,8 @@ class AudioPlayer {
     _playerState = state;
   }
 
+  late PositionUpdater _positionUpdater;
+
   /// Completer to wait until the native player and its event stream are
   /// created.
   @visibleForTesting
@@ -97,9 +100,7 @@ class AudioPlayer {
   /// position of the playback if the status is [PlayerState.playing].
   ///
   /// You can use it on a progress bar, for instance.
-  Stream<Duration> get onPositionChanged => eventStream
-      .where((event) => event.eventType == AudioEventType.position)
-      .map((event) => event.position!);
+  Stream<Duration> get onPositionChanged => _positionUpdater.positionStream;
 
   /// Stream of changes on audio duration.
   ///
@@ -134,7 +135,10 @@ class AudioPlayer {
       .map((event) => event.logMessage!);
 
   /// Creates a new instance and assigns an unique id to it.
-  AudioPlayer({String? playerId}) : playerId = playerId ?? _uuid.v4() {
+  /// If the [positionUpdateInterval] is set, the position stream is updated in
+  /// the according interval. Otherwise it is updated at every new frame.
+  AudioPlayer({String? playerId, Duration? positionUpdateInterval})
+      : playerId = playerId ?? _uuid.v4() {
     _onLogStreamSubscription = onLog.listen(
       (log) => AudioLogger.log('$log\nSource: $_source'),
       onError: (Object e, [StackTrace? stackTrace]) => AudioLogger.error(
@@ -154,6 +158,17 @@ class AudioPlayer {
       },
     );
     _create();
+    if (positionUpdateInterval != null) {
+      _positionUpdater = TimerPositionUpdater(
+          getPosition: getCurrentPosition,
+          getState: () => state,
+          interval: positionUpdateInterval);
+    } else {
+      _positionUpdater = FramePositionUpdater(
+        getPosition: getCurrentPosition,
+        getState: () => state,
+      );
+    }
   }
 
   Future<void> _create() async {
@@ -412,6 +427,7 @@ class AudioPlayer {
       _onLogStreamSubscription.cancel(),
       _eventStreamSubscription.cancel(),
       _eventStreamController.close(),
+      _positionUpdater.dispose(),
     ];
 
     _source = null;
