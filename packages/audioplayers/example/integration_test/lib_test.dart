@@ -118,11 +118,6 @@ void main() async {
             await onPositionSub.cancel();
             await tester.pumpLinux();
           },
-          // FIXME(gustl22): Android provides no position for samples shorter
-          //  than 0.5 seconds.
-          skip: isAndroid &&
-              !td.isLiveStream &&
-              td.duration! < const Duration(seconds: 1),
         );
       }
     }
