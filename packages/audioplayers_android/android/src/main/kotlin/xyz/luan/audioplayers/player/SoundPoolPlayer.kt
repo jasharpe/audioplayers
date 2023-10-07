@@ -144,8 +144,6 @@ class SoundPoolPlayer(
     // Cannot get current position for Sound Pool
     override fun getCurrentPosition() = null
 
-    override fun isActuallyPlaying() = false
-
     override fun seekTo(position: Int) {
         if (position == 0) {
             streamId?.let {
