@@ -123,13 +123,6 @@ extension StreamWidgetTester on WidgetTester {
   // Web: millisecond
   // Darwin: millisecond
 
-  // Update interval for position:
-  // Android: ~200ms
-  // Windows: ~250ms
-  // Linux: ~250ms
-  // Web: ~250ms
-  // Darwin: ~200ms
-
   Future<void> stopStream() async {
     final st = StackTrace.current.toString();
 
