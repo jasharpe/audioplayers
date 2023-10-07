@@ -284,8 +284,7 @@ void MediaEngineWrapper::CreateMediaEngine() {
       [&]() { this->OnLoaded(); },
       [&](MF_MEDIA_ENGINE_ERR error, HRESULT hr) { this->OnError(error, hr); },
       [&](BufferingState state) { this->OnBufferingStateChange(state); },
-      [&]() { this->OnPlaybackEnded(); },
-      [&]() { this->OnSeekCompleted(); });
+      [&]() { this->OnPlaybackEnded(); }, [&]() { this->OnSeekCompleted(); });
   THROW_IF_FAILED(creationAttributes->SetUnknown(MF_MEDIA_ENGINE_CALLBACK,
                                                  m_callbackHelper.get()));
   THROW_IF_FAILED(
