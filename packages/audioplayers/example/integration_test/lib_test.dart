@@ -86,6 +86,48 @@ void main() async {
     skip: isIOS || isMacOS,
   );
 
+  group('AP events', () {
+    late AudioPlayer player;
+
+    setUp(() async {
+      player = AudioPlayer(playerId: 'somePlayerId');
+    });
+
+    tearDown(() async {
+      await player.dispose();
+    });
+
+    for (final td in audioTestDataList) {
+      if (features.hasPositionEvent) {
+        testWidgets(
+          '#positionEvent ${td.source}',
+          (tester) async {
+            await tester.pumpLinux();
+            await player.setSource(td.source);
+
+            Duration? position;
+            final onPositionSub = player.onPositionChanged
+                .where((event) => event > Duration.zero)
+                .listen((event) => position = event);
+
+            await player.resume();
+            await tester.pumpAndSettle(const Duration(seconds: 1));
+            expect(position, isNotNull);
+            expect(position, greaterThan(Duration.zero));
+            await player.stop();
+            await onPositionSub.cancel();
+            await tester.pumpLinux();
+          },
+          // FIXME(gustl22): Android provides no position for samples shorter
+          //  than 0.5 seconds.
+          skip: isAndroid &&
+              !td.isLiveStream &&
+              td.duration! < const Duration(seconds: 1),
+        );
+      }
+    }
+  });
+
   group('play multiple sources', () {
     testWidgets(
       'play multiple sources simultaneously',
