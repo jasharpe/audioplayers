@@ -132,10 +132,6 @@ void main() {
           duration: Duration(milliseconds: 98765),
         ),
         const AudioEvent(
-          eventType: AudioEventType.position,
-          position: Duration(milliseconds: 8765),
-        ),
-        const AudioEvent(
           eventType: AudioEventType.log,
           logMessage: 'someLogMessage',
         ),

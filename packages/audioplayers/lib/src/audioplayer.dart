@@ -168,7 +168,8 @@ class AudioPlayer {
       _positionUpdater = TimerPositionUpdater(
           getPosition: getCurrentPosition,
           getState: () => state,
-          interval: positionUpdateInterval);
+          interval: positionUpdateInterval,
+      );
     } else {
       _positionUpdater = FramePositionUpdater(
         getPosition: getCurrentPosition,

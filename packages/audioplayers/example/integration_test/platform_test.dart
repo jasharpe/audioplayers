@@ -16,7 +16,6 @@ void main() async {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   final features = PlatformFeatures.instance();
   final isLinux = !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
-  final isAndroid = !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
   final audioTestDataList = await getAudioTestDataList();
 
   group('Platform method channel', () {
