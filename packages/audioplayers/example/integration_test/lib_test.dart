@@ -23,7 +23,6 @@ void main() async {
 
     await tester.pumpLinux();
     await player.play(specialCharAssetTestData.source);
-    await tester.pumpAndSettle();
     // Sources take some time to get initialized
     await tester.pump(const Duration(seconds: 8));
     await player.stop();
@@ -41,7 +40,6 @@ void main() async {
       final path = await player.audioCache.loadPath(specialCharAsset);
       expect(path, isNot(contains('%'))); // Ensure path is not URL encoded
       await player.play(DeviceFileSource(path));
-      await tester.pumpAndSettle();
       // Sources take some time to get initialized
       await tester.pump(const Duration(seconds: 8));
       await player.stop();
@@ -57,7 +55,6 @@ void main() async {
 
     await tester.pumpLinux();
     await player.play(specialCharUrlTestData.source);
-    await tester.pumpAndSettle();
     // Sources take some time to get initialized
     await tester.pump(const Duration(seconds: 8));
     await player.stop();
@@ -73,7 +70,6 @@ void main() async {
 
       await tester.pumpLinux();
       await player.play(noExtensionAssetTestData.source);
-      await tester.pumpAndSettle();
       // Sources take some time to get initialized
       await tester.pump(const Duration(seconds: 8));
       await player.stop();
@@ -110,7 +106,7 @@ void main() async {
                 player.onPositionChanged.listen((event) => position = event);
 
             await player.resume();
-            await tester.pumpAndSettle(const Duration(seconds: 5));
+            await tester.pump(const Duration(seconds: 5));
 
             if (td.isLiveStream || td.duration! > const Duration(seconds: 10)) {
               expect(player.state, PlayerState.playing);
@@ -147,7 +143,6 @@ void main() async {
         await Future.wait<void>(
           iterator.map((i) => players[i].play(audioTestDataList[i].source)),
         );
-        await tester.pumpAndSettle();
         // Sources take some time to get initialized
         await tester.pump(const Duration(seconds: 8));
         for (var i = 0; i < audioTestDataList.length; i++) {
@@ -176,7 +171,6 @@ void main() async {
       for (final td in audioTestDataList) {
         await tester.pumpLinux();
         await player.play(td.source);
-        await tester.pumpAndSettle();
         // Sources take some time to get initialized
         await tester.pump(const Duration(seconds: 8));
         if (td.isLiveStream || td.duration! > const Duration(seconds: 10)) {
@@ -216,7 +210,6 @@ void main() async {
 
         await tester.pumpLinux();
         await player.play(td.source);
-        await tester.pumpAndSettle();
         await tester
             .pump((td.duration ?? Duration.zero) + const Duration(seconds: 8));
         expect(player.state, PlayerState.completed);
@@ -230,7 +223,6 @@ void main() async {
         await player.setAudioContext(audioContext);
 
         await player.resume();
-        await tester.pumpAndSettle();
         await tester
             .pump((td.duration ?? Duration.zero) + const Duration(seconds: 8));
         expect(player.state, PlayerState.completed);
@@ -265,7 +257,6 @@ void main() async {
         await tester.pumpLinux();
         await player.setSource(td.source);
         await player.resume();
-        await tester.pumpAndSettle();
         await tester
             .pump((td.duration ?? Duration.zero) + const Duration(seconds: 8));
         expect(player.state, PlayerState.playing);
@@ -281,7 +272,6 @@ void main() async {
         await player.setAudioContext(audioContext);
 
         await player.resume();
-        await tester.pumpAndSettle();
         await tester
             .pump((td.duration ?? Duration.zero) + const Duration(seconds: 8));
         expect(player.state, PlayerState.playing);
