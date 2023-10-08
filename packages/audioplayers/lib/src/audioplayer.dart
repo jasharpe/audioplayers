@@ -154,7 +154,7 @@ class AudioPlayer {
         if (releaseMode == ReleaseMode.release) {
           _source = null;
         }
-        await _positionUpdater.update();
+        await _positionUpdater.stop();
       },
       onError: (Object _, [StackTrace? __]) {
         /* Errors are already handled via log stream */
@@ -166,14 +166,12 @@ class AudioPlayer {
     _create();
     if (positionUpdateInterval != null) {
       _positionUpdater = TimerPositionUpdater(
-          getPosition: getCurrentPosition,
-          getState: () => state,
-          interval: positionUpdateInterval,
+        getPosition: getCurrentPosition,
+        interval: positionUpdateInterval,
       );
     } else {
       _positionUpdater = FramePositionUpdater(
         getPosition: getCurrentPosition,
-        getState: () => state,
       );
     }
   }
@@ -215,7 +213,7 @@ class AudioPlayer {
       await seek(position);
     }
     await setSource(source);
-    return resume();
+    await resume();
   }
 
   Future<void> setAudioContext(AudioContext ctx) async {
@@ -237,7 +235,7 @@ class AudioPlayer {
     await creatingCompleter.future;
     await _platform.pause(playerId);
     state = PlayerState.paused;
-    await _positionUpdater.update();
+    await _positionUpdater.stop();
   }
 
   /// Stops the audio that is currently playing.
@@ -248,7 +246,7 @@ class AudioPlayer {
     await creatingCompleter.future;
     await _platform.stop(playerId);
     state = PlayerState.stopped;
-    await _positionUpdater.update();
+    await _positionUpdater.stop();
   }
 
   /// Resumes the audio that has been paused or stopped.
@@ -256,6 +254,7 @@ class AudioPlayer {
     await creatingCompleter.future;
     await _platform.resume(playerId);
     state = PlayerState.playing;
+    _positionUpdater.start();
   }
 
   /// Releases the resources associated with this media player.
