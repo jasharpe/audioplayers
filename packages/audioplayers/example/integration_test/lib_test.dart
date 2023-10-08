@@ -86,7 +86,11 @@ void main() async {
     late AudioPlayer player;
 
     setUp(() async {
-      player = AudioPlayer(playerId: 'somePlayerId');
+      player = AudioPlayer(
+        playerId: 'somePlayerId',
+        // These test should also work with:
+        // positionUpdateInterval: const Duration(milliseconds: 100)
+      );
     });
 
     tearDown(() async {
@@ -106,7 +110,7 @@ void main() async {
                 player.onPositionChanged.listen((event) => position = event);
 
             await player.resume();
-            await tester.pump(const Duration(seconds: 5));
+            await tester.pumpGlobalFrames(const Duration(seconds: 5));
 
             if (td.isLiveStream || td.duration! > const Duration(seconds: 10)) {
               expect(player.state, PlayerState.playing);
@@ -120,6 +124,7 @@ void main() async {
             }
 
             await player.stop();
+            await tester.pumpAndSettle();
             expect(player.state, PlayerState.stopped);
             expect(position, Duration.zero);
             await onPositionSub.cancel();
